@@ -1,85 +1,59 @@
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Upload, FileText } from 'lucide-react'
+import { Upload, FileText, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { useState } from 'react'
 
-export default function DocumentUploadStep({ data = {}, onChange }) {
+export default function DocumentUploadStep({ data = {}, onNext, onBack, loading }) {
+  const [localData, setLocalData] = useState(data)
+
   const handleFileChange = (field, e) => {
     const file = e.target.files?.[0]
     if (file) {
-      onChange?.({ ...data, [field]: file })
+      setLocalData(prev => ({ ...prev, [field]: { name: file.name, size: file.size } }))
     }
   }
 
+  const isReady = localData.identityProof && localData.addressProof
+
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Document Upload</h2>
-      <div className="space-y-6">
-        <div>
-          <h3 className="font-semibold mb-4">Upload Identity Proof</h3>
-          <label className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="w-8 h-8 text-slate-400" />
-              <p className="text-sm text-slate-600">Click to upload ID (Passport, License, or Aadhar)</p>
-            </div>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => handleFileChange('identityProof', e)}
-              className="hidden"
-            />
-          </label>
-          {data.identityProof && (
-            <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
-              <FileText className="w-4 h-4" />
-              {data.identityProof.name}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h3 className="font-semibold mb-4">Upload Address Proof</h3>
-          <label className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="w-8 h-8 text-slate-400" />
-              <p className="text-sm text-slate-600">Click to upload address proof (Utility bill, Lease, etc)</p>
-            </div>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => handleFileChange('addressProof', e)}
-              className="hidden"
-            />
-          </label>
-          {data.addressProof && (
-            <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
-              <FileText className="w-4 h-4" />
-              {data.addressProof.name}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h3 className="font-semibold mb-4">Upload Income Proof</h3>
-          <label className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors">
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="w-8 h-8 text-slate-400" />
-              <p className="text-sm text-slate-600">Click to upload income proof (Payslip, ITR, Bank Statement)</p>
-            </div>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              onChange={(e) => handleFileChange('incomeProof', e)}
-              className="hidden"
-            />
-          </label>
-          {data.incomeProof && (
-            <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
-              <FileText className="w-4 h-4" />
-              {data.incomeProof.name}
-            </div>
-          )}
-        </div>
+    <div className="space-y-6">
+      <div className="grid gap-6">
+        {['identityProof', 'addressProof'].map((field) => (
+          <div key={field} className="space-y-3">
+            <h3 className="font-semibold text-sm uppercase tracking-wider text-slate-500">
+              {field === 'identityProof' ? 'Identity Proof' : 'Address Proof'}
+            </h3>
+            <label className={`block border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
+              localData[field] ? 'border-accent bg-accent/5' : 'border-slate-200 hover:border-primary'
+            }`}>
+              <div className="flex flex-col items-center gap-2">
+                {localData[field] ? (
+                  <>
+                    <CheckCircle2 className="w-8 h-8 text-accent" />
+                    <p className="text-sm font-medium text-slate-900">{localData[field].name}</p>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-slate-400" />
+                    <p className="text-sm text-slate-600">Click to upload document</p>
+                    <p className="text-xs text-slate-400">PDF, JPG or PNG (max 5MB)</p>
+                  </>
+                )}
+              </div>
+              <input type="file" accept="image/*,.pdf" onChange={(e) => handleFileChange(field, e)} className="hidden" />
+            </label>
+          </div>
+        ))}
       </div>
-    </Card>
+
+      <div className="flex gap-4 pt-6">
+        <Button variant="outline" onClick={onBack} className="flex-1 h-12 rounded-xl">
+          <ArrowLeft className="mr-2 w-4 h-4" /> Back
+        </Button>
+        <Button onClick={() => onNext(localData)} className="flex-[2] h-12 rounded-xl" disabled={!isReady || loading}>
+          Continue to Verification
+          <ArrowRight className="ml-2 w-4 h-4" />
+        </Button>
+      </div>
+    </div>
   )
 }

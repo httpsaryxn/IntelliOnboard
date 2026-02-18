@@ -42,7 +42,7 @@ const InputOTP = React.forwardRef(
             value={value[index] || ''}
             onChange={(e) => handleInputChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            className="w-14 h-14 border-2 border-slate-700 bg-slate-800 rounded-lg text-center font-bold text-xl text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:border-cyan-500 transition-all"
+            className="w-12 h-14 border-2 border-slate-200 bg-slate-50 rounded-2xl text-center font-bold text-xl text-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
           />
         ))}
       </div>
@@ -64,13 +64,10 @@ InputOTPGroup.displayName = "InputOTPGroup"
 
 const InputOTPSlot = React.forwardRef(
   ({ index, className, ...props }, ref) => (
-    <input
+    <div
       ref={ref}
-      type="text"
-      inputMode="numeric"
-      maxLength={1}
       className={cn(
-        "w-14 h-14 border-2 border-slate-300 rounded-lg text-center font-bold text-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-all",
+        "w-12 h-14 border-2 border-slate-200 bg-slate-50 rounded-2xl flex items-center justify-center font-bold text-xl text-slate-900 transition-all",
         className
       )}
       {...props}

@@ -5,7 +5,7 @@ const Card = React.forwardRef(({ className, ...props }, ref) =>
   React.createElement("div", {
     ref,
     className: cn(
-      "rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 text-white shadow-lg",
+      "rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-sm",
       className
     ),
     ...props,
@@ -26,7 +26,7 @@ const CardTitle = React.forwardRef(({ className, ...props }, ref) =>
   React.createElement("h2", {
     ref,
     className: cn(
-      "text-2xl font-bold leading-none tracking-tight text-white",
+      "text-2xl font-bold leading-none tracking-tight text-slate-900",
       className
     ),
     ...props,
@@ -37,7 +37,7 @@ CardTitle.displayName = "CardTitle"
 const CardDescription = React.forwardRef(({ className, ...props }, ref) =>
   React.createElement("p", {
     ref,
-    className: cn("text-sm text-slate-400", className),
+    className: cn("text-sm text-slate-500", className),
     ...props,
   })
 )

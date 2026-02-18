@@ -1,19 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { CheckCircle2, Clock, Mail, Phone } from 'lucide-react'
+import { CheckCircle2, Clock, Mail, Phone, ArrowRight, ShieldCheck, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
-const statusSteps = [
-  { id: 1, title: 'Application Submitted', description: 'We received your application', status: 'completed' },
-  { id: 2, title: 'Document Verification', description: 'Verifying your documents', status: 'current' },
-  { id: 3, title: 'Background Check', description: 'Conducting security checks', status: 'pending' },
-  { id: 4, title: 'Final Review', description: 'Final approval process', status: 'pending' },
-  { id: 5, title: 'Account Activation', description: 'Your account is being set up', status: 'pending' }
-]
 
 export default function StatusPage() {
   const [application, setApplication] = useState(null)
@@ -21,7 +12,7 @@ export default function StatusPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const loadApplication = async () => {
+    const loadStatus = async () => {
       const email = localStorage.getItem('userEmail')
       const appId = localStorage.getItem('applicationId')
       
@@ -43,179 +34,136 @@ export default function StatusPage() {
       }
     }
 
-    loadApplication()
-  }, [])
+    loadStatus()
+  }, [router])
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-slate-200 border-t-[hsl(217,33%,17%)] rounded-full animate-spin mx-auto" />
-          <p className="text-slate-600">Loading your application status...</p>
-        </div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     )
   }
 
+  const getStatusSteps = () => {
+    const status = application?.status || 'submitted'
+    return [
+      { id: 1, title: 'Application Received', done: true, current: false },
+      { id: 2, title: 'Risk Assessment', done: status !== 'submitted', current: status === 'submitted' },
+      { id: 3, title: 'Manual Review', done: ['approved', 'rejected'].includes(status), current: status === 'reviewing' },
+      { id: 4, title: 'Account Setup', done: status === 'approved', current: status === 'reviewing' && application?.risk_level === 'low' }
+    ]
+  }
+
+  const timeline = getStatusSteps()
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-slate-50">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b px-6 py-4">
+        <div className="container mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-[hsl(217,33%,17%)] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">IB</span>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xs">IB</span>
             </div>
-            <span className="text-xl font-semibold text-[hsl(217,33%,17%)]">IntelliOnboard</span>
+            <span className="text-xl font-bold text-primary">IntelliOnboard</span>
           </Link>
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <ShieldCheck className="w-4 h-4 text-accent" />
+            Verified Secure Session
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-3xl mx-auto space-y-8">
-          {/* Success Message */}
-          <div className="text-center space-y-4">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-[hsl(217,33%,17%)] mb-2">
-                Application Submitted Successfully!
-              </h1>
-              <p className="text-slate-600 text-lg">
-                Thank you for applying. We're reviewing your application.
-              </p>
-            </div>
-          </div>
-
-          {/* Application Info */}
-          <Card className="p-6 border-slate-200 rounded-2xl">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-slate-600 mb-1">Application ID</p>
-                <p className="font-mono text-sm font-semibold text-[hsl(217,33%,17%)]">
-                  {application?.id || 'APP-XXXX-XXXX'}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-600 mb-1">Submitted On</p>
-                <p className="font-semibold text-[hsl(217,33%,17%)]">
-                  {application?.submitted_at ? new Date(application.submitted_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  }) : 'Just now'}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-600 mb-1">Account Type</p>
-                <p className="font-semibold text-[hsl(217,33%,17%)] capitalize">
-                  {application?.account_type || 'Savings'} Account
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-600 mb-1">Estimated Processing</p>
-                <p className="font-semibold text-[hsl(217,33%,17%)]">24-48 hours</p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Status Timeline */}
-          <Card className="p-8 border-slate-200 rounded-2xl">
-            <h2 className="text-xl font-bold text-[hsl(217,33%,17%)] mb-6">Application Progress</h2>
-            <div className="space-y-6">
-              {statusSteps.map((step, index) => (
-                <div key={step.id} className="flex items-start space-x-4">
-                  <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      step.status === 'completed' ? 'bg-green-100' :
-                      step.status === 'current' ? 'bg-blue-100' :
-                      'bg-slate-100'
-                    }`}>
-                      {step.status === 'completed' ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      ) : step.status === 'current' ? (
-                        <Clock className="w-5 h-5 text-blue-600" />
-                      ) : (
-                        <div className="w-2 h-2 bg-slate-300 rounded-full" />
-                      )}
-                    </div>
-                    {index < statusSteps.length - 1 && (
-                      <div className={`w-0.5 h-12 ${
-                        step.status === 'completed' ? 'bg-green-200' : 'bg-slate-200'
-                      }`} />
-                    )}
-                  </div>
-                  <div className="flex-1 pb-6">
-                    <h3 className={`font-semibold mb-1 ${
-                      step.status === 'completed' ? 'text-green-900' :
-                      step.status === 'current' ? 'text-blue-900' :
-                      'text-slate-500'
-                    }`}>
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-slate-600">{step.description}</p>
-                    {step.status === 'current' && (
-                      <p className="text-xs text-blue-600 mt-2 font-medium">In Progress...</p>
-                    )}
-                  </div>
+      <main className="container mx-auto px-6 py-12 max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <section className="bg-white rounded-3xl p-8 border shadow-sm">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-green-100 rounded-2xl">
+                  <CheckCircle2 className="w-8 h-8 text-green-600" />
                 </div>
-              ))}
-            </div>
-          </Card>
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900">Application Submitted</h1>
+                  <p className="text-slate-500 text-sm">Ref: {application?.id?.slice(0,8).toUpperCase()}</p>
+                </div>
+              </div>
 
-          {/* What Happens Next */}
-          <Card className="p-6 border-slate-200 rounded-2xl bg-slate-50">
-            <h3 className="font-semibold text-[hsl(217,33%,17%)] mb-4">What Happens Next?</h3>
-            <ul className="space-y-3 text-sm text-slate-700">
-              <li className="flex items-start space-x-2">
-                <span className="text-[hsl(180,25%,50%)] font-bold mt-0.5">•</span>
-                <span>We're reviewing your application and verifying your documents</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-[hsl(180,25%,50%)] font-bold mt-0.5">•</span>
-                <span>You'll receive an email/SMS update at each stage of the process</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-[hsl(180,25%,50%)] font-bold mt-0.5">•</span>
-                <span>Most applications are approved within 24-48 hours</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-[hsl(180,25%,50%)] font-bold mt-0.5">•</span>
-                <span>Once approved, your account will be activated immediately</span>
-              </li>
-            </ul>
-          </Card>
+              <div className="space-y-8 mt-10">
+                {timeline.map((step, idx) => (
+                  <div key={step.id} className="flex gap-4 relative">
+                    {idx !== timeline.length - 1 && (
+                      <div className={`absolute left-[19px] top-10 w-0.5 h-10 ${step.done ? 'bg-green-500' : 'bg-slate-200'}`} />
+                    )}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center z-10 shrink-0 ${
+                      step.done ? 'bg-green-500 text-white' : 
+                      step.current ? 'bg-primary text-white animate-pulse' : 
+                      'bg-slate-100 text-slate-400'
+                    }`}>
+                      {step.done ? <CheckCircle2 className="w-6 h-6" /> : <span className="text-sm font-bold">{step.id}</span>}
+                    </div>
+                    <div className="pt-2">
+                      <h3 className={`font-semibold ${step.done ? 'text-slate-900' : 'text-slate-500'}`}>{step.title}</h3>
+                      <p className="text-sm text-slate-400">
+                        {step.done ? 'Completed' : step.current ? 'Under technical review' : 'Waiting for previous steps'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-          {/* Contact Support */}
-          <Card className="p-6 border-slate-200 rounded-2xl">
-            <h3 className="font-semibold text-[hsl(217,33%,17%)] mb-4">Need Help?</h3>
-            <p className="text-sm text-slate-600 mb-4">
-              Our support team is here to help you with any questions about your application.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" className="rounded-xl flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                support@intellionboard.com
-              </Button>
-              <Button variant="outline" className="rounded-xl flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                1-800-BANK-NOW
-              </Button>
-            </div>
-          </Card>
-
-          {/* Return Home */}
-          <div className="text-center">
-            <Link href="/">
-              <Button variant="outline" className="rounded-xl">
-                Return to Homepage
-              </Button>
-            </Link>
+            <section className="bg-slate-900 rounded-3xl p-8 text-white">
+              <h2 className="text-lg font-semibold mb-4">Estimated Processing Time</h2>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-accent" />
+                  <span className="text-2xl font-bold">24-48h</span>
+                </div>
+                <div className="h-10 w-px bg-slate-700" />
+                <p className="text-slate-400 text-sm">
+                  Your application is currently at the <strong>Risk Assessment</strong> stage. We'll notify you via SMS once finished.
+                </p>
+              </div>
+            </section>
           </div>
+
+          <aside className="space-y-6">
+            <Card className="p-6 border bg-white shadow-sm rounded-3xl">
+              <h3 className="font-bold text-slate-900 mb-4">Your Selection</h3>
+              <div className="space-y-4">
+                <div className="pb-4 border-b last:border-0">
+                  <p className="text-xs text-slate-500 uppercase font-bold mb-1">Account Type</p>
+                  <p className="text-sm font-medium capitalize">{application?.form_data?.accountType || 'Savings'}</p>
+                </div>
+                <div className="pb-4 border-b last:border-0">
+                  <p className="text-xs text-slate-500 uppercase font-bold mb-1">Preferred Currency</p>
+                  <p className="text-sm font-medium">{application?.form_data?.currency || 'USD'}</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6 border bg-white shadow-sm rounded-3xl">
+              <h3 className="font-bold text-slate-900 mb-4">Need Help?</h3>
+              <div className="space-y-3">
+                <button className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">Email Support</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">Call Support</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </Card>
+          </aside>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

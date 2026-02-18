@@ -1,107 +1,54 @@
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react'
 
-export default function ReviewConfirmStep({ data = {}, onSubmit }) {
-  const handleSubmit = () => {
-    onSubmit?.()
-  }
-
+export default function ReviewConfirmStep({ data = {}, onSubmit, onBack, loading }) {
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Review & Confirm</h2>
-      <div className="space-y-6">
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 flex gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-blue-900">
-            Please review all the information you've provided. Once submitted, you may not be able to edit some fields.
+    <div className="space-y-8">
+      <div className="bg-slate-50 rounded-3xl p-6 border-2 border-slate-100 space-y-6">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Full Name</p>
+            <p className="font-medium">{data.firstName} {data.lastName}</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Account Type</p>
+            <p className="font-medium capitalize">{data.accountType} Account</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Location</p>
+            <p className="font-medium">{data.city}, {data.state || 'NY'}</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Currency</p>
+            <p className="font-medium">{data.currency}</p>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t space-y-3">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <CheckCircle2 className="w-4 h-4 text-accent" /> Identity Documents Verified
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <CheckCircle2 className="w-4 h-4 text-accent" /> Biometric Data Captured
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl">
+          <ShieldCheck className="w-6 h-6 text-primary shrink-0" />
+          <p className="text-xs text-slate-600">
+            By submitting, you agree to our Terms of Service and Electronic Communications Disclosure.
           </p>
         </div>
-
-        <div className="space-y-4">
-          <div className="border rounded-lg p-4">
-            <h3 className="font-semibold mb-3">Personal Details</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-slate-600">Name</p>
-                <p className="font-medium">{data.firstName} {data.lastName}</p>
-              </div>
-              <div>
-                <p className="text-slate-600">Email</p>
-                <p className="font-medium">{data.email}</p>
-              </div>
-              <div>
-                <p className="text-slate-600">Phone</p>
-                <p className="font-medium">{data.phone}</p>
-              </div>
-              <div>
-                <p className="text-slate-600">Date of Birth</p>
-                <p className="font-medium">{data.dob}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="font-semibold mb-3">Address & Employment</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-slate-600">Address</p>
-                <p className="font-medium">{data.street}, {data.city}</p>
-              </div>
-              <div>
-                <p className="text-slate-600">Company</p>
-                <p className="font-medium">{data.company}</p>
-              </div>
-              <div>
-                <p className="text-slate-600">Designation</p>
-                <p className="font-medium">{data.designation}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="font-semibold mb-3">Account Preferences</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-slate-600">Account Type</p>
-                <p className="font-medium capitalize">{data.accountType}</p>
-              </div>
-              <div>
-                <p className="text-slate-600">Currency</p>
-                <p className="font-medium">{data.currency}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
-              <p className="text-sm">
-                <span className="font-semibold">Document Upload:</span> Complete
-              </p>
-            </div>
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
-              <p className="text-sm">
-                <span className="font-semibold">Identity Verification:</span> Complete
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3 pt-4">
-          <Button onClick={handleSubmit} className="flex-1 bg-green-600 hover:bg-green-700 h-11">
-            Submit Application
+        
+        <div className="flex gap-4">
+          <Button variant="outline" onClick={onBack} className="flex-1 h-12 rounded-xl" disabled={loading}>Back</Button>
+          <Button onClick={onSubmit} className="flex-[2] h-12 rounded-xl font-bold bg-primary hover:bg-primary/90" disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit Application'}
           </Button>
         </div>
-
-        <p className="text-xs text-slate-600 text-center">
-          By clicking Submit, you agree to our terms and conditions
-        </p>
       </div>
-    </Card>
+    </div>
   )
 }
