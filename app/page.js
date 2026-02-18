@@ -236,7 +236,7 @@ export default function LandingPage() {
             Join thousands of customers who have already opened their accounts with us. Experience seamless digital banking today.
           </p>
           <Link href="/login">
-            <Button size="lg" className="bg-white hover:bg-slate-100 text-[hsl(217,33%,17%)] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
+            <Button size="lg">
               Open Your Account Now
             </Button>
           </Link>
