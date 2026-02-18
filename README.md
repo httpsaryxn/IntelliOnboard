@@ -358,7 +358,7 @@ This project is open source and available under the MIT License. See the LICENSE
 
 ## 👨‍💻 Author
 
-Built by **Shivam** for a 2026 Hackathon submission
+Built by **Aryan Darekar, Shivam Salkar, Samarjeet Singh, Siddhesh Rajgure (Team Hackers_VIT)** for 2026 Innovgenius Hackathon submission
 
 **GitHub**: [@httpsaryxn](https://github.com/httpsaryxn)
 
